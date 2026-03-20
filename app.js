@@ -1,12 +1,11 @@
-// ===== 保存キー =====
-const TASK_KEY = "fbed_tasks";
-const CHECK_KEY = "fbed_checks";
+const TASK_KEY = "fbed_tasks_v2";
+const MORNING_KEY = "fbed_morning_checks_v1";
 
-// ===== ADHD変換（ここが肝） =====
 function transformTask(task) {
-  // 超シンプルに分解（後で賢くもできる）
   const rules = [
     { keyword: "勉強", steps: ["机に座る", "教科書を開く", "1ページだけやる"] },
+    { keyword: "宿題", steps: ["宿題を出す", "1問だけやる", "終わったらしまう"] },
+    { keyword: "学校", steps: ["必要なものを出す", "1つだけ準備する", "終わったら確認する"] },
     { keyword: "仕事", steps: ["PCを開く", "メールを1通確認", "5分だけやる"] },
     { keyword: "掃除", steps: ["1ヶ所だけ片付ける", "ゴミを1つ捨てる"] },
     { keyword: "運動", steps: ["立ち上がる", "ストレッチ10秒"] }
@@ -18,81 +17,112 @@ function transformTask(task) {
     }
   }
 
-  // デフォルト（全部分解）
-  return [
-    "やる場所に行く",
-    task,
-    "終わったらチェック"
-  ];
+  return ["やる場所に行く", task, "終わったらチェックする"];
 }
 
-// ===== 保存 =====
-function saveAll() {
+function saveTasks() {
   const tasks = [];
-  const checks = [];
-
-  document.querySelectorAll("#taskList li").forEach((li) => {
-    tasks.push(li.querySelector("span").textContent);
-    checks.push(li.querySelector("input").checked);
+  document.querySelectorAll("#taskList li, #doneList li").forEach((li) => {
+    tasks.push({
+      text: li.querySelector(".task-text").textContent,
+      done: li.querySelector(".task-checkbox").checked
+    });
   });
-
   localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
-  localStorage.setItem(CHECK_KEY, JSON.stringify(checks));
 }
 
-// ===== 読み込み =====
-function loadAll() {
-  const tasks = JSON.parse(localStorage.getItem(TASK_KEY) || "[]");
-  const checks = JSON.parse(localStorage.getItem(CHECK_KEY) || "[]");
-
-  tasks.forEach((task, index) => {
-    addTaskToList(task, checks[index]);
+function loadTasks() {
+  const saved = JSON.parse(localStorage.getItem(TASK_KEY) || "[]");
+  saved.forEach((task) => {
+    addTaskToList(task.text, task.done);
   });
+  updateCounts();
 }
 
-// ===== UI生成 =====
-function addTaskToList(task, checked = false) {
+function addTaskToList(task, done = false) {
   const li = document.createElement("li");
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.checked = checked;
-  checkbox.onchange = saveAll;
+  checkbox.className = "task-checkbox";
+  checkbox.checked = done;
 
   const span = document.createElement("span");
+  span.className = "task-text";
   span.textContent = task;
 
   const delBtn = document.createElement("button");
   delBtn.textContent = "削除";
-  delBtn.style.marginLeft = "10px";
+  delBtn.className = "delete-btn";
   delBtn.onclick = function () {
     li.remove();
-    saveAll();
+    saveTasks();
+    updateCounts();
+  };
+
+  checkbox.onchange = function () {
+    moveTask(li, checkbox.checked);
+    saveTasks();
+    updateCounts();
   };
 
   li.appendChild(checkbox);
   li.appendChild(span);
   li.appendChild(delBtn);
 
-  document.getElementById("taskList").appendChild(li);
+  if (done) {
+    document.getElementById("doneList").appendChild(li);
+  } else {
+    document.getElementById("taskList").appendChild(li);
+  }
 }
 
-// ===== 追加ボタン =====
+function moveTask(li, done) {
+  if (done) {
+    document.getElementById("doneList").appendChild(li);
+  } else {
+    document.getElementById("taskList").appendChild(li);
+  }
+}
+
 function addTask() {
   const input = document.getElementById("taskInput");
   const text = input.value.trim();
   if (text === "") return;
 
-  // ADHD変換
   const steps = transformTask(text);
+  steps.forEach(step => addTaskToList(step, false));
 
-  steps.forEach(step => addTaskToList(step));
-
-  saveAll();
   input.value = "";
+  saveTasks();
+  updateCounts();
 }
 
-// ===== 初期化 =====
+function updateCounts() {
+  const remaining = document.querySelectorAll("#taskList li").length;
+  const done = document.querySelectorAll("#doneList li").length;
+
+  document.getElementById("remainingCount").textContent = remaining;
+  document.getElementById("doneCount").textContent = done;
+}
+
+function saveMorningChecks() {
+  const states = [];
+  document.querySelectorAll(".morning-check").forEach((check) => {
+    states.push(check.checked);
+  });
+  localStorage.setItem(MORNING_KEY, JSON.stringify(states));
+}
+
+function loadMorningChecks() {
+  const saved = JSON.parse(localStorage.getItem(MORNING_KEY) || "[]");
+  document.querySelectorAll(".morning-check").forEach((check, index) => {
+    check.checked = saved[index] || false;
+    check.onchange = saveMorningChecks;
+  });
+}
+
 window.onload = function () {
-  loadAll();
+  loadTasks();
+  loadMorningChecks();
 };
