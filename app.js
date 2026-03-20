@@ -1,16 +1,35 @@
-function addTask() {
-  const input = document.getElementById("taskInput");
-  const task = input.value;
+function saveTasks() {
+  const items = [];
+  document.querySelectorAll("#taskList li").forEach((li) => {
+    items.push(li.textContent);
+  });
+  localStorage.setItem("fbed_tasks", JSON.stringify(items));
+}
 
-  // 空なら何もしない
-  if (task === "") return;
+function loadTasks() {
+  const saved = JSON.parse(localStorage.getItem("fbed_tasks") || "[]");
+  saved.forEach((task) => {
+    addTaskToList(task);
+  });
+}
 
-  // リストに追加
+function addTaskToList(task) {
   const li = document.createElement("li");
   li.textContent = task;
-
   document.getElementById("taskList").appendChild(li);
+}
 
-  // 入力リセット
+function addTask() {
+  const input = document.getElementById("taskInput");
+  const task = input.value.trim();
+
+  if (task === "") return;
+
+  addTaskToList(task);
+  saveTasks();
   input.value = "";
 }
+
+window.onload = function () {
+  loadTasks();
+};
