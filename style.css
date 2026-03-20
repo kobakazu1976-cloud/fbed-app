@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  max-width: 700px;
+  max-width: 760px;
   margin: 0 auto;
 }
 
@@ -59,7 +59,7 @@ h3 {
 .task-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
 }
 
@@ -94,14 +94,37 @@ button:hover {
   font-size: 22px;
 }
 
-.task-list,
+.task-list {
+  margin-top: 10px;
+}
+
 .done-list {
   margin-top: 10px;
   padding-left: 0;
   list-style: none;
 }
 
-.task-list li,
+.category-block {
+  background: #ffffffcc;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.category-title {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  color: #007aff;
+  font-weight: bold;
+}
+
+.category-items {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.category-items li,
 .done-list li {
   display: flex;
   align-items: center;
@@ -131,6 +154,7 @@ button:hover {
   background: #ff4d4f;
   font-size: 18px;
   padding: 8px 12px;
+  border-radius: 10px;
 }
 
 .delete-btn:hover {
