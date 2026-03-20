@@ -26,7 +26,6 @@ function transformTask(task) {
       category: "勉強",
       steps: [
         "机に座る",
-        "問題集を出す",
         "問題集を開く",
         "1問ずつ進める",
         "丸つけする",
