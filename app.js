@@ -1,5 +1,22 @@
-const TASK_KEY = "fbed_tasks_v5";
-const MORNING_KEY = "fbed_morning_checks_v1";
+const MORNING_KEY_PREFIX = "fbed_morning_";
+const TASK_KEY_PREFIX = "fbed_tasks_";
+
+// 今日の日付キーを作る
+function getTodayKey() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function getMorningKey() {
+  return MORNING_KEY_PREFIX + getTodayKey();
+}
+
+function getTaskKey() {
+  return TASK_KEY_PREFIX + getTodayKey();
+}
 
 // ADHD向け変換ルール
 function transformTask(task) {
@@ -79,6 +96,7 @@ function createCategoryBlock(category) {
 function createTaskItem(task, category, done = false) {
   const li = document.createElement("li");
   li.dataset.category = category;
+  li.dataset.done = done ? "true" : "false";
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
@@ -127,8 +145,11 @@ function addTaskToCategory(category, task, done = false) {
   }
 }
 
-// 移動
+// チェックで移動
 function moveTask(li, done) {
+  li.dataset.done = done ? "true" : "false";
+  li.querySelector(".task-checkbox").checked = done;
+
   const category = li.dataset.category || "その他";
 
   if (done) {
@@ -151,48 +172,41 @@ function cleanEmptyCategories() {
 
 // 保存
 function saveTasks() {
-  const data = [];
+  const active = [];
+  const done = [];
 
   document.querySelectorAll(".category-block").forEach((block) => {
     const category = block.dataset.category;
-    const items = [];
-
     block.querySelectorAll("li").forEach((li) => {
-      items.push({
-        text: li.querySelector(".task-text").textContent,
-        done: false
+      active.push({
+        category: category,
+        text: li.querySelector(".task-text").textContent
       });
     });
-
-    data.push({
-      category: category,
-      items: items
-    });
   });
 
-  const doneItems = [];
   document.querySelectorAll("#doneList li").forEach((li) => {
-    doneItems.push({
-      text: li.querySelector(".task-text").textContent,
+    done.push({
       category: li.dataset.category || "その他",
-      done: true
+      text: li.querySelector(".task-text").textContent
     });
   });
 
-  localStorage.setItem(TASK_KEY, JSON.stringify({
-    active: data,
-    done: doneItems
-  }));
+  const data = {
+    date: getTodayKey(),
+    active: active,
+    done: done
+  };
+
+  localStorage.setItem(getTaskKey(), JSON.stringify(data));
 }
 
 // 読込
 function loadTasks() {
-  const saved = JSON.parse(localStorage.getItem(TASK_KEY) || '{"active":[],"done":[]}');
+  const saved = JSON.parse(localStorage.getItem(getTaskKey()) || '{"active":[],"done":[]}');
 
-  saved.active.forEach((group) => {
-    group.items.forEach((item) => {
-      addTaskToCategory(group.category, item.text, false);
-    });
+  saved.active.forEach((item) => {
+    addTaskToCategory(item.category, item.text, false);
   });
 
   saved.done.forEach((item) => {
@@ -204,7 +218,7 @@ function loadTasks() {
   updateNowTask();
 }
 
-// 追加ボタン
+// タスク追加
 function addTask() {
   const input = document.getElementById("taskInput");
   const text = input.value.trim();
@@ -234,12 +248,12 @@ function updateCounts() {
 
 // 今やること更新
 function updateNowTask() {
-  const firstTask = document.querySelector(".category-block li");
+  const firstTask = document.querySelector(".category-block .category-items li");
   const nowTaskEl = document.getElementById("nowTask");
   const nowCategoryEl = document.getElementById("nowCategory");
 
   if (!firstTask) {
-    nowTaskEl.textContent = "まだありません";
+    nowTaskEl.textContent = "今日はここまで！";
     nowCategoryEl.textContent = "";
     return;
   }
@@ -251,32 +265,41 @@ function updateNowTask() {
   nowCategoryEl.textContent = "カテゴリー: " + category;
 }
 
-// 朝チェック保存
+// 朝チェック保存（今日だけ）
 function saveMorningChecks() {
   const states = [];
   document.querySelectorAll(".morning-check").forEach((check) => {
     states.push(check.checked);
   });
-  localStorage.setItem(MORNING_KEY, JSON.stringify(states));
+
+  const data = {
+    date: getTodayKey(),
+    states: states
+  };
+
+  localStorage.setItem(getMorningKey(), JSON.stringify(data));
 }
 
-// 朝チェック読込
+// 朝チェック読込（今日だけ）
 function loadMorningChecks() {
-  const saved = JSON.parse(localStorage.getItem(MORNING_KEY) || "[]");
+  const saved = JSON.parse(localStorage.getItem(getMorningKey()) || '{"states":[]}');
+
   document.querySelectorAll(".morning-check").forEach((check, index) => {
-    check.checked = saved[index] || false;
+    check.checked = saved.states[index] || false;
     check.onchange = saveMorningChecks;
   });
 }
 
-// Enterキーでも追加
+// Enterキーで追加
 document.addEventListener("DOMContentLoaded", function () {
   const input = document.getElementById("taskInput");
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      addTask();
-    }
-  });
+  if (input) {
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        addTask();
+      }
+    });
+  }
 });
 
 // 初期化
