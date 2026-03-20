@@ -52,3 +52,12 @@ li {
   margin: 5px 0;
   border-radius: 5px;
 }
+label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+body {
+  max-width: 500px;
+  margin: 0 auto;
+}
