@@ -1,0 +1,9 @@
+{
+  "name": "FBED",
+  "short_name": "FBED",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007aff",
+  "icons": []
+}
