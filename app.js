@@ -184,9 +184,9 @@ function transformTask(task) {
   return {
     category: "その他",
     steps: [
-      "やる場所に行く",
+      "リアンにご飯あげる",
       task,
-      "終わったらチェック"
+      "リアンの散歩"
     ]
   };
 }
