@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FBED</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>FBED</h1>
+<p>From Beginning to the End of the Day</p>
+
+<h2>Morning Start</h2>
+
+<label><input type="checkbox"> ベッドから起きる</label><br>
+<label><input type="checkbox"> カーテンを開ける</label><br>
+<label><input type="checkbox"> 水を飲む</label><br>
+
+<h2>Today Tasks</h2>
+
+<input id="taskInput" placeholder="タスクを書く">
+<button onclick="addTask()">追加</button>
+
+<ul id="taskList"></ul>
+
+<script src="app.js"></script>
+
+</body>
+</html>
