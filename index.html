@@ -9,14 +9,19 @@
 </head>
 <body>
 
+  <div class="bg-deco deco1"></div>
+  <div class="bg-deco deco2"></div>
+  <div class="bg-deco deco3"></div>
+
   <div class="container">
     <h1>FBED</h1>
-    <p class="subtitle">From Beginning to the End of the Day</p>
+    <p class="subtitle">朝から夜までのやること</p>
 
     <section class="now-card">
       <div class="now-label">今やること</div>
       <div id="nowTask" class="now-task">まだありません</div>
       <div id="nowCategory" class="now-category"></div>
+      <button id="completeNowBtn" class="complete-now-btn" onclick="completeNowTask()">完了</button>
     </section>
 
     <h2>朝のスタート</h2>
@@ -44,9 +49,13 @@
       <button onclick="addTask()">追加</button>
     </div>
 
-    <div class="status-box">
-      <p>のこりタスク: <span id="remainingCount">0</span></p>
-      <p>できたタスク: <span id="doneCount">0</span></p>
+    <div class="quick-buttons">
+      <button class="quick-btn" onclick="quickAdd('勉強')">勉強</button>
+      <button class="quick-btn" onclick="quickAdd('読書')">読書</button>
+      <button class="quick-btn" onclick="quickAdd('日記を書く')">日記</button>
+      <button class="quick-btn" onclick="quickAdd('歯磨き')">歯磨き</button>
+      <button class="quick-btn" onclick="quickAdd('朝食')">朝食</button>
+      <button class="quick-btn" onclick="quickAdd('塾')">塾</button>
     </div>
 
     <h3>いまやることリスト</h3>
@@ -54,8 +63,13 @@
 
     <h3>できた！</h3>
     <ul id="doneList" class="done-list"></ul>
+
+    <div class="status-box bottom-status">
+      <p>のこりタスク: <span id="remainingCount">0</span></p>
+      <p>できたタスク: <span id="doneCount">0</span></p>
+    </div>
   </div>
 
   <script src="app.js"></script>
 </body>
-</html>今やることを1つだけ一番上に大きく表示する完成版
+</html>
