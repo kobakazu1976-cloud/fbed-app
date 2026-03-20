@@ -1,7 +1,7 @@
 const MORNING_KEY_PREFIX = "fbed_morning_";
 const TASK_KEY_PREFIX = "fbed_tasks_";
 
-// 今日の日付キーを作る
+// 今日の日付キー
 function getTodayKey() {
   const today = new Date();
   const y = today.getFullYear();
@@ -170,7 +170,7 @@ function cleanEmptyCategories() {
   });
 }
 
-// 保存
+// タスク保存
 function saveTasks() {
   const active = [];
   const done = [];
@@ -201,7 +201,7 @@ function saveTasks() {
   localStorage.setItem(getTaskKey(), JSON.stringify(data));
 }
 
-// 読込
+// タスク読込
 function loadTasks() {
   const saved = JSON.parse(localStorage.getItem(getTaskKey()) || '{"active":[],"done":[]}');
 
@@ -215,7 +215,6 @@ function loadTasks() {
 
   cleanEmptyCategories();
   updateCounts();
-  updateNowTask();
 }
 
 // タスク追加
@@ -246,48 +245,70 @@ function updateCounts() {
   document.getElementById("doneCount").textContent = done;
 }
 
-// 今やること更新
-function updateNowTask() {
-  const firstTask = document.querySelector(".category-block .category-items li");
-  const nowTaskEl = document.getElementById("nowTask");
-  const nowCategoryEl = document.getElementById("nowCategory");
-
-  if (!firstTask) {
-    nowTaskEl.textContent = "今日はここまで！";
-    nowCategoryEl.textContent = "";
-    return;
-  }
-
-  const taskText = firstTask.querySelector(".task-text").textContent;
-  const category = firstTask.dataset.category || "その他";
-
-  nowTaskEl.textContent = taskText;
-  nowCategoryEl.textContent = "カテゴリー: " + category;
-}
-
 // 朝チェック保存（今日だけ）
 function saveMorningChecks() {
-  const states = [];
+  const data = [];
+
   document.querySelectorAll(".morning-check").forEach((check) => {
-    states.push(check.checked);
+    const labelText = check.parentElement.querySelector("span").textContent;
+    data.push({
+      text: labelText,
+      checked: check.checked
+    });
   });
 
-  const data = {
-    date: getTodayKey(),
-    states: states
-  };
-
   localStorage.setItem(getMorningKey(), JSON.stringify(data));
+  updateNowTask();
 }
 
 // 朝チェック読込（今日だけ）
 function loadMorningChecks() {
-  const saved = JSON.parse(localStorage.getItem(getMorningKey()) || '{"states":[]}');
+  const saved = JSON.parse(localStorage.getItem(getMorningKey()) || "[]");
 
   document.querySelectorAll(".morning-check").forEach((check, index) => {
-    check.checked = saved.states[index] || false;
-    check.onchange = saveMorningChecks;
+    if (saved[index]) {
+      check.checked = saved[index].checked;
+    } else {
+      check.checked = false;
+    }
+
+    check.onchange = function () {
+      saveMorningChecks();
+      updateNowTask();
+    };
   });
+}
+
+// 今やること更新
+function updateNowTask() {
+  const nowTaskEl = document.getElementById("nowTask");
+  const nowCategoryEl = document.getElementById("nowCategory");
+
+  // ① 朝のスタートで未完了を優先
+  const unfinishedMorning = Array.from(document.querySelectorAll(".morning-check"))
+    .find((check) => !check.checked);
+
+  if (unfinishedMorning) {
+    const text = unfinishedMorning.parentElement.querySelector("span").textContent;
+    nowTaskEl.textContent = text;
+    nowCategoryEl.textContent = "カテゴリー: 朝のスタート";
+    return;
+  }
+
+  // ② 次に通常タスクの先頭
+  const firstTask = document.querySelector(".category-block .category-items li");
+
+  if (firstTask) {
+    const taskText = firstTask.querySelector(".task-text").textContent;
+    const category = firstTask.dataset.category || "その他";
+    nowTaskEl.textContent = taskText;
+    nowCategoryEl.textContent = "カテゴリー: " + category;
+    return;
+  }
+
+  // ③ 何もなければ完了表示
+  nowTaskEl.textContent = "今日はここまで！";
+  nowCategoryEl.textContent = "";
 }
 
 // Enterキーで追加
@@ -306,4 +327,5 @@ document.addEventListener("DOMContentLoaded", function () {
 window.onload = function () {
   loadTasks();
   loadMorningChecks();
+  updateNowTask();
 };
