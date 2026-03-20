@@ -14,17 +14,26 @@ h1 {
   text-align: center;
   color: #007aff;
   margin-bottom: 10px;
+  font-size: 54px;
 }
 
 .subtitle {
   margin-bottom: 30px;
-  font-size: 16px;
+  font-size: 22px;
 }
 
 h2 {
   margin-top: 40px;
   margin-bottom: 20px;
   color: #333;
+  font-size: 28px;
+}
+
+h3 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #444;
 }
 
 .check-list {
@@ -37,20 +46,14 @@ h2 {
 .check-item {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  font-size: 18px;
-  margin: 0;
+  gap: 12px;
+  font-size: 28px;
 }
 
 .check-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   margin: 0;
-}
-
-.check-item span {
-  display: inline-block;
 }
 
 .task-row {
@@ -62,36 +65,74 @@ h2 {
 
 #taskInput {
   flex: 1;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   border: 1px solid #ccc;
-  font-size: 16px;
+  font-size: 24px;
   box-sizing: border-box;
 }
 
 button {
-  padding: 12px 18px;
+  padding: 14px 20px;
   background: #007aff;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 22px;
 }
 
 button:hover {
   background: #005bb5;
 }
 
-ul {
-  margin-top: 15px;
-  padding-left: 20px;
+.status-box {
+  margin-top: 20px;
+  background: #ffffffcc;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 22px;
 }
 
-li {
+.task-list,
+.done-list {
+  margin-top: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.task-list li,
+.done-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: #f1f1f1;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+.done-list li {
+  background: #d9f7be;
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.task-text {
+  flex: 1;
+}
+
+.delete-btn {
+  background: #ff4d4f;
+  font-size: 18px;
+  padding: 8px 12px;
+}
+
+.delete-btn:hover {
+  background: #d9363e;
 }
