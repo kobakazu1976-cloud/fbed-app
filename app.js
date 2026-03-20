@@ -1,7 +1,6 @@
 const MORNING_KEY_PREFIX = "fbed_morning_";
 const TASK_KEY_PREFIX = "fbed_tasks_";
 
-// 今日の日付キー
 function getTodayKey() {
   const today = new Date();
   const y = today.getFullYear();
@@ -18,7 +17,6 @@ function getTaskKey() {
   return TASK_KEY_PREFIX + getTodayKey();
 }
 
-// ADHD向け変換ルール
 function transformTask(task) {
   const rules = [
     {
@@ -26,6 +24,7 @@ function transformTask(task) {
       category: "勉強",
       steps: [
         "机に座る",
+        "問題集を出す",
         "問題集を開く",
         "1問ずつ進める",
         "丸つけする",
@@ -184,21 +183,19 @@ function transformTask(task) {
   return {
     category: "その他",
     steps: [
-      "リアンにご飯あげる",
+      "やる場所に行く",
       task,
-      "リアンの散歩"
+      "終わったらチェック"
     ]
   };
 }
 
-// クイック追加
 function quickAdd(text) {
   const input = document.getElementById("taskInput");
   input.value = text;
   addTask();
 }
 
-// カテゴリブロック作成
 function createCategoryBlock(category) {
   let existing = document.querySelector(`[data-category="${category}"]`);
   if (existing) return existing;
@@ -222,7 +219,6 @@ function createCategoryBlock(category) {
   return block;
 }
 
-// タスク行作成
 function createTaskItem(task, category, done = false) {
   const li = document.createElement("li");
   li.dataset.category = category;
@@ -263,7 +259,6 @@ function createTaskItem(task, category, done = false) {
   return li;
 }
 
-// タスク追加
 function addTaskToCategory(category, task, done = false) {
   const li = createTaskItem(task, category, done);
 
@@ -275,7 +270,6 @@ function addTaskToCategory(category, task, done = false) {
   }
 }
 
-// チェックで移動
 function moveTask(li, done) {
   li.dataset.done = done ? "true" : "false";
   li.querySelector(".task-checkbox").checked = done;
@@ -290,7 +284,6 @@ function moveTask(li, done) {
   }
 }
 
-// 空カテゴリ削除
 function cleanEmptyCategories() {
   document.querySelectorAll(".category-block").forEach((block) => {
     const items = block.querySelectorAll("li");
@@ -300,7 +293,6 @@ function cleanEmptyCategories() {
   });
 }
 
-// タスク保存
 function saveTasks() {
   const active = [];
   const done = [];
@@ -331,7 +323,6 @@ function saveTasks() {
   localStorage.setItem(getTaskKey(), JSON.stringify(data));
 }
 
-// タスク読込
 function loadTasks() {
   const saved = JSON.parse(localStorage.getItem(getTaskKey()) || '{"active":[],"done":[]}');
 
@@ -347,7 +338,6 @@ function loadTasks() {
   updateCounts();
 }
 
-// タスク追加
 function addTask() {
   const input = document.getElementById("taskInput");
   const text = input.value.trim();
@@ -366,7 +356,6 @@ function addTask() {
   updateNowTask();
 }
 
-// カウント更新
 function updateCounts() {
   const remaining = document.querySelectorAll(".category-block li").length;
   const done = document.querySelectorAll("#doneList li").length;
@@ -375,7 +364,6 @@ function updateCounts() {
   document.getElementById("doneCount").textContent = done;
 }
 
-// 朝チェック保存
 function saveMorningChecks() {
   const data = [];
 
@@ -391,7 +379,6 @@ function saveMorningChecks() {
   updateNowTask();
 }
 
-// 朝チェック読込
 function loadMorningChecks() {
   const saved = JSON.parse(localStorage.getItem(getMorningKey()) || "[]");
 
@@ -409,7 +396,6 @@ function loadMorningChecks() {
   });
 }
 
-// 今やること更新
 function updateNowTask() {
   const nowTaskEl = document.getElementById("nowTask");
   const nowCategoryEl = document.getElementById("nowCategory");
@@ -448,7 +434,6 @@ function updateNowTask() {
   completeBtn.dataset.text = "";
 }
 
-// 今やることを完了
 function completeNowTask() {
   const btn = document.getElementById("completeNowBtn");
   const type = btn.dataset.type;
@@ -485,7 +470,6 @@ function completeNowTask() {
   }
 }
 
-// Enterキーで追加
 document.addEventListener("DOMContentLoaded", function () {
   const input = document.getElementById("taskInput");
   if (input) {
@@ -497,7 +481,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// 初期化
 window.onload = function () {
   loadTasks();
   loadMorningChecks();
