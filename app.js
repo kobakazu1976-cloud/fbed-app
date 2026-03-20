@@ -22,50 +22,84 @@ function getTaskKey() {
 function transformTask(task) {
   const rules = [
     {
-      keyword: "勉強",
+      keywords: ["勉強", "問題集", "スタサプ"],
       category: "勉強",
-      steps: ["机に座る", "教科書を開く", "1ページだけやる"]
+      steps: ["机に座る", "問題集を開く", "1問だけやる", "丸つけする"]
     },
     {
-      keyword: "宿題",
-      category: "勉強",
-      steps: ["宿題を出す", "1問だけやる", "終わったらしまう"]
+      keywords: ["読書", "本を読む"],
+      category: "読書",
+      steps: ["本を持つ", "開く", "1ページ読む", "次を読むか決める"]
     },
     {
-      keyword: "学校",
-      category: "学校の準備",
-      steps: ["必要なものを出す", "1つだけ準備する", "終わったら確認する"]
+      keywords: ["日記", "日記を書く"],
+      category: "日記",
+      steps: ["ノートを出す", "今日のことを1行書く", "気持ちを1つ書く", "閉じる"]
     },
     {
-      keyword: "掃除",
-      category: "掃除",
-      steps: ["1ヶ所だけ片付ける", "ゴミを1つ捨てる"]
+      keywords: ["学校"],
+      category: "学校",
+      steps: ["カバンを見る", "1つだけ準備する", "全部確認する"]
     },
     {
-      keyword: "運動",
+      keywords: ["塾"],
+      category: "塾",
+      steps: ["時間を見る", "持ち物を出す", "出発する"]
+    },
+    {
+      keywords: ["進路"],
+      category: "進路",
+      steps: ["スマホを開く", "1校だけ調べる", "1つメモする"]
+    },
+    {
+      keywords: ["朝食", "朝ごはん"],
+      category: "食事",
+      steps: ["席に座る", "一口食べる", "飲み物を飲む"]
+    },
+    {
+      keywords: ["ランチ", "昼ごはん"],
+      category: "食事",
+      steps: ["席に座る", "一口食べる", "5分だけ食べる"]
+    },
+    {
+      keywords: ["夕食", "夜ごはん"],
+      category: "食事",
+      steps: ["席に座る", "一口食べる", "5分だけ食べる"]
+    },
+    {
+      keywords: ["歯磨き", "はみがき"],
+      category: "歯磨き",
+      steps: ["洗面所に行く", "歯ブラシを持つ", "10秒磨く"]
+    },
+    {
+      keywords: ["運動"],
       category: "運動",
-      steps: ["立ち上がる", "ストレッチ10秒"]
-    },
-    {
-      keyword: "病院",
-      category: "病院",
-      steps: ["持ち物を確認する", "出発時間を確認する", "行く準備をする"]
+      steps: ["立つ", "ストレッチ10秒"]
     }
   ];
 
   for (let rule of rules) {
-    if (task.includes(rule.keyword)) {
-      return {
-        category: rule.category,
-        steps: rule.steps
-      };
+    for (let k of rule.keywords) {
+      if (task.includes(k)) {
+        return {
+          category: rule.category,
+          steps: rule.steps
+        };
+      }
     }
   }
 
   return {
     category: "その他",
-    steps: ["やる場所に行く", task, "終わったらチェックする"]
+    steps: ["やる場所に行く", task, "終わったらチェック"]
   };
+}
+
+// クイック追加
+function quickAdd(text) {
+  const input = document.getElementById("taskInput");
+  input.value = text;
+  addTask();
 }
 
 // カテゴリブロック作成
@@ -245,7 +279,7 @@ function updateCounts() {
   document.getElementById("doneCount").textContent = done;
 }
 
-// 朝チェック保存（今日だけ）
+// 朝チェック保存
 function saveMorningChecks() {
   const data = [];
 
@@ -261,7 +295,7 @@ function saveMorningChecks() {
   updateNowTask();
 }
 
-// 朝チェック読込（今日だけ）
+// 朝チェック読込
 function loadMorningChecks() {
   const saved = JSON.parse(localStorage.getItem(getMorningKey()) || "[]");
 
@@ -283,8 +317,8 @@ function loadMorningChecks() {
 function updateNowTask() {
   const nowTaskEl = document.getElementById("nowTask");
   const nowCategoryEl = document.getElementById("nowCategory");
+  const completeBtn = document.getElementById("completeNowBtn");
 
-  // ① 朝のスタートで未完了を優先
   const unfinishedMorning = Array.from(document.querySelectorAll(".morning-check"))
     .find((check) => !check.checked);
 
@@ -292,10 +326,12 @@ function updateNowTask() {
     const text = unfinishedMorning.parentElement.querySelector("span").textContent;
     nowTaskEl.textContent = text;
     nowCategoryEl.textContent = "カテゴリー: 朝のスタート";
+    completeBtn.disabled = false;
+    completeBtn.dataset.type = "morning";
+    completeBtn.dataset.text = text;
     return;
   }
 
-  // ② 次に通常タスクの先頭
   const firstTask = document.querySelector(".category-block .category-items li");
 
   if (firstTask) {
@@ -303,12 +339,54 @@ function updateNowTask() {
     const category = firstTask.dataset.category || "その他";
     nowTaskEl.textContent = taskText;
     nowCategoryEl.textContent = "カテゴリー: " + category;
+    completeBtn.disabled = false;
+    completeBtn.dataset.type = "task";
+    completeBtn.dataset.text = taskText;
     return;
   }
 
-  // ③ 何もなければ完了表示
   nowTaskEl.textContent = "今日はここまで！";
   nowCategoryEl.textContent = "";
+  completeBtn.disabled = true;
+  completeBtn.dataset.type = "";
+  completeBtn.dataset.text = "";
+}
+
+// 今やることを完了
+function completeNowTask() {
+  const btn = document.getElementById("completeNowBtn");
+  const type = btn.dataset.type;
+  const text = btn.dataset.text;
+
+  if (!type || !text) return;
+
+  if (type === "morning") {
+    const target = Array.from(document.querySelectorAll(".morning-check")).find((check) => {
+      const labelText = check.parentElement.querySelector("span").textContent;
+      return !check.checked && labelText === text;
+    });
+
+    if (target) {
+      target.checked = true;
+      saveMorningChecks();
+      updateNowTask();
+    }
+    return;
+  }
+
+  if (type === "task") {
+    const target = Array.from(document.querySelectorAll(".category-block .category-items li")).find((li) => {
+      return li.querySelector(".task-text").textContent === text;
+    });
+
+    if (target) {
+      moveTask(target, true);
+      cleanEmptyCategories();
+      saveTasks();
+      updateCounts();
+      updateNowTask();
+    }
+  }
 }
 
 // Enterキーで追加
@@ -327,5 +405,6 @@ document.addEventListener("DOMContentLoaded", function () {
 window.onload = function () {
   loadTasks();
   loadMorningChecks();
+  updateCounts();
   updateNowTask();
 };
