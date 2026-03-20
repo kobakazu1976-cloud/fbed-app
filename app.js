@@ -1,7 +1,7 @@
-const TASK_KEY = "fbed_tasks_v3";
+const TASK_KEY = "fbed_tasks_v4";
 const MORNING_KEY = "fbed_morning_checks_v1";
 
-// ===== ADHD変換（カテゴリ付き） =====
+// ADHD向けの変換ルール
 function transformTask(task) {
   const rules = [
     {
@@ -15,6 +15,11 @@ function transformTask(task) {
       steps: ["宿題を出す", "1問だけやる", "終わったらしまう"]
     },
     {
+      keyword: "学校",
+      category: "学校の準備",
+      steps: ["必要なものを出す", "1つだけ準備する", "終わったら確認する"]
+    },
+    {
       keyword: "掃除",
       category: "掃除",
       steps: ["1ヶ所だけ片付ける", "ゴミを1つ捨てる"]
@@ -23,6 +28,11 @@ function transformTask(task) {
       keyword: "運動",
       category: "運動",
       steps: ["立ち上がる", "ストレッチ10秒"]
+    },
+    {
+      keyword: "病院",
+      category: "病院",
+      steps: ["持ち物を確認する", "出発時間を確認する", "行く準備をする"]
     }
   ];
 
@@ -41,43 +51,7 @@ function transformTask(task) {
   };
 }
 
-// ===== 保存 =====
-function saveTasks() {
-  const data = [];
-
-  document.querySelectorAll(".category-block").forEach((block) => {
-    const category = block.dataset.category;
-    const items = [];
-
-    block.querySelectorAll("li").forEach((li) => {
-      items.push({
-        text: li.querySelector(".task-text").textContent,
-        done: li.querySelector(".task-checkbox").checked
-      });
-    });
-
-    data.push({ category, items });
-  });
-
-  localStorage.setItem(TASK_KEY, JSON.stringify(data));
-}
-
-// ===== 読み込み =====
-function loadTasks() {
-  const saved = JSON.parse(localStorage.getItem(TASK_KEY) || "[]");
-
-  saved.forEach(group => {
-    const block = createCategoryBlock(group.category);
-
-    group.items.forEach(item => {
-      addTaskToCategory(block, item.text, item.done);
-    });
-  });
-
-  updateCounts();
-}
-
-// ===== カテゴリブロック作成 =====
+// カテゴリブロックを作る
 function createCategoryBlock(category) {
   let existing = document.querySelector(`[data-category="${category}"]`);
   if (existing) return existing;
@@ -86,10 +60,12 @@ function createCategoryBlock(category) {
   block.className = "category-block";
   block.dataset.category = category;
 
-  const title = document.createElement("h3");
+  const title = document.createElement("div");
+  title.className = "category-title";
   title.textContent = "▼ " + category;
 
   const list = document.createElement("ul");
+  list.className = "category-items";
 
   block.appendChild(title);
   block.appendChild(list);
@@ -99,8 +75,8 @@ function createCategoryBlock(category) {
   return block;
 }
 
-// ===== タスク追加 =====
-function addTaskToCategory(block, task, done = false) {
+// タスク行を作る
+function createTaskItem(task, done = false) {
   const li = document.createElement("li");
 
   const checkbox = document.createElement("input");
@@ -117,12 +93,14 @@ function addTaskToCategory(block, task, done = false) {
   delBtn.className = "delete-btn";
   delBtn.onclick = function () {
     li.remove();
+    cleanEmptyCategories();
     saveTasks();
     updateCounts();
   };
 
   checkbox.onchange = function () {
     moveTask(li, checkbox.checked);
+    cleanEmptyCategories();
     saveTasks();
     updateCounts();
   };
@@ -131,32 +109,109 @@ function addTaskToCategory(block, task, done = false) {
   li.appendChild(span);
   li.appendChild(delBtn);
 
+  return li;
+}
+
+// カテゴリの中にタスクを追加
+function addTaskToCategory(category, task, done = false) {
+  const li = createTaskItem(task, done);
+
   if (done) {
     document.getElementById("doneList").appendChild(li);
   } else {
-    block.querySelector("ul").appendChild(li);
+    const block = createCategoryBlock(category);
+    block.querySelector(".category-items").appendChild(li);
   }
 }
 
-// ===== 移動 =====
+// チェックしたら doneList に移動
 function moveTask(li, done) {
   if (done) {
     document.getElementById("doneList").appendChild(li);
+  } else {
+    // 戻す場合はその他に戻す
+    const block = createCategoryBlock("その他");
+    block.querySelector(".category-items").appendChild(li);
   }
 }
 
-// ===== 追加処理 =====
+// 空カテゴリを消す
+function cleanEmptyCategories() {
+  document.querySelectorAll(".category-block").forEach((block) => {
+    const items = block.querySelectorAll("li");
+    if (items.length === 0) {
+      block.remove();
+    }
+  });
+}
+
+// タスク保存
+function saveTasks() {
+  const data = [];
+
+  document.querySelectorAll(".category-block").forEach((block) => {
+    const category = block.dataset.category;
+    const items = [];
+
+    block.querySelectorAll("li").forEach((li) => {
+      items.push({
+        text: li.querySelector(".task-text").textContent,
+        done: li.querySelector(".task-checkbox").checked
+      });
+    });
+
+    data.push({
+      category: category,
+      items: items
+    });
+  });
+
+  document.querySelectorAll("#doneList li").forEach((li) => {
+    data.push({
+      category: "__done__",
+      items: [
+        {
+          text: li.querySelector(".task-text").textContent,
+          done: true
+        }
+      ]
+    });
+  });
+
+  localStorage.setItem(TASK_KEY, JSON.stringify(data));
+}
+
+// タスク読込
+function loadTasks() {
+  const saved = JSON.parse(localStorage.getItem(TASK_KEY) || "[]");
+
+  saved.forEach((group) => {
+    if (group.category === "__done__") {
+      group.items.forEach((item) => {
+        addTaskToCategory("done", item.text, true);
+      });
+    } else {
+      group.items.forEach((item) => {
+        addTaskToCategory(group.category, item.text, item.done);
+      });
+    }
+  });
+
+  cleanEmptyCategories();
+  updateCounts();
+}
+
+// タスク追加
 function addTask() {
   const input = document.getElementById("taskInput");
   const text = input.value.trim();
+
   if (text === "") return;
 
   const result = transformTask(text);
 
-  const block = createCategoryBlock(result.category);
-
-  result.steps.forEach(step => {
-    addTaskToCategory(block, step);
+  result.steps.forEach((step) => {
+    addTaskToCategory(result.category, step, false);
   });
 
   input.value = "";
@@ -164,16 +219,16 @@ function addTask() {
   updateCounts();
 }
 
-// ===== カウント =====
+// カウント更新
 function updateCounts() {
-  const remaining = document.querySelectorAll("#taskList li").length;
+  const remaining = document.querySelectorAll(".category-block li").length;
   const done = document.querySelectorAll("#doneList li").length;
 
   document.getElementById("remainingCount").textContent = remaining;
   document.getElementById("doneCount").textContent = done;
 }
 
-// ===== 朝チェック保存 =====
+// 朝チェック保存
 function saveMorningChecks() {
   const states = [];
   document.querySelectorAll(".morning-check").forEach((check) => {
@@ -182,6 +237,7 @@ function saveMorningChecks() {
   localStorage.setItem(MORNING_KEY, JSON.stringify(states));
 }
 
+// 朝チェック読込
 function loadMorningChecks() {
   const saved = JSON.parse(localStorage.getItem(MORNING_KEY) || "[]");
   document.querySelectorAll(".morning-check").forEach((check, index) => {
@@ -190,7 +246,7 @@ function loadMorningChecks() {
   });
 }
 
-// ===== 初期化 =====
+// 初期化
 window.onload = function () {
   loadTasks();
   loadMorningChecks();
