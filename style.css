@@ -1,46 +1,89 @@
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(180deg, #8ec5ff 0%, #d9a7ff 50%, #fff3b0 100%);
   margin: 0;
   padding: 20px;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.bg-deco {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(8px);
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.deco1 {
+  width: 180px;
+  height: 180px;
+  background: #ff7fd1;
+  top: 40px;
+  left: -30px;
+}
+
+.deco2 {
+  width: 220px;
+  height: 220px;
+  background: #7dffb3;
+  top: 280px;
+  right: -50px;
+}
+
+.deco3 {
+  width: 160px;
+  height: 160px;
+  background: #fff06a;
+  bottom: 40px;
+  left: 20px;
 }
 
 .container {
   max-width: 760px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 h1 {
   text-align: center;
-  color: #007aff;
+  color: #ffffff;
   margin-bottom: 10px;
-  font-size: 54px;
+  font-size: 56px;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .subtitle {
+  text-align: center;
   margin-bottom: 24px;
-  font-size: 22px;
+  font-size: 24px;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .now-card {
-  background: #fff7cc;
-  border: 3px solid #ffd666;
-  border-radius: 18px;
-  padding: 20px;
+  background: linear-gradient(135deg, #fff7cc, #ffd6f5);
+  border: 4px solid #ffffff;
+  border-radius: 24px;
+  padding: 22px;
   margin-bottom: 32px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
 .now-label {
   font-size: 22px;
-  color: #8c6d1f;
+  color: #7a3cff;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
 .now-task {
-  font-size: 36px;
-  font-weight: bold;
+  font-size: 38px;
+  font-weight: 900;
   color: #222;
   line-height: 1.4;
 }
@@ -49,20 +92,46 @@ h1 {
   margin-top: 10px;
   font-size: 20px;
   color: #007aff;
+  font-weight: bold;
+}
+
+.complete-now-btn {
+  margin-top: 16px;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, #52c41a, #95de64);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 6px 14px rgba(82, 196, 26, 0.35);
+}
+
+.complete-now-btn:hover {
+  transform: translateY(-1px);
+}
+
+.complete-now-btn:disabled {
+  background: #bfbfbf;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 h2 {
   margin-top: 40px;
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 28px;
+  margin-bottom: 18px;
+  color: #ffffff;
+  font-size: 30px;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 h3 {
   margin-top: 30px;
   margin-bottom: 10px;
-  font-size: 24px;
-  color: #444;
+  font-size: 25px;
+  color: #ffffff;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .check-list {
@@ -77,6 +146,10 @@ h3 {
   align-items: center;
   gap: 12px;
   font-size: 28px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 14px 18px;
+  border-radius: 18px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 
 .check-item input[type="checkbox"] {
@@ -95,32 +168,42 @@ h3 {
 #taskInput {
   flex: 1;
   padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
+  border-radius: 16px;
+  border: 2px solid #ffffff;
   font-size: 24px;
   box-sizing: border-box;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 
 button {
   padding: 14px 20px;
-  background: #007aff;
+  background: linear-gradient(135deg, #007aff, #5ac8fa);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 6px 14px rgba(0, 122, 255, 0.3);
 }
 
 button:hover {
-  background: #005bb5;
+  transform: translateY(-1px);
 }
 
-.status-box {
-  margin-top: 20px;
-  background: #ffffffcc;
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 22px;
+.quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.quick-btn {
+  background: linear-gradient(135deg, #ff7fd1, #ffb86b);
+  font-size: 18px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  box-shadow: 0 5px 12px rgba(255, 127, 209, 0.28);
 }
 
 .task-list {
@@ -134,17 +217,18 @@ button:hover {
 }
 
 .category-block {
-  background: #ffffffcc;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
   padding: 16px;
   margin: 16px 0;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.09);
 }
 
 .category-title {
   margin: 0 0 12px 0;
-  font-size: 24px;
-  color: #007aff;
-  font-weight: bold;
+  font-size: 25px;
+  color: #7a3cff;
+  font-weight: 900;
 }
 
 .category-items {
@@ -158,15 +242,16 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f1f1f1;
+  background: #f6f7ff;
   padding: 14px;
   margin: 10px 0;
-  border-radius: 10px;
+  border-radius: 16px;
   font-size: 24px;
+  box-shadow: inset 0 0 0 2px rgba(122, 60, 255, 0.06);
 }
 
 .done-list li {
-  background: #d9f7be;
+  background: linear-gradient(135deg, #d9f7be, #b7eb8f);
 }
 
 .task-checkbox {
@@ -180,12 +265,26 @@ button:hover {
 }
 
 .delete-btn {
-  background: #ff4d4f;
+  background: linear-gradient(135deg, #ff4d4f, #ff7875);
   font-size: 18px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: none;
 }
 
 .delete-btn:hover {
-  background: #d9363e;
+  transform: none;
+}
+
+.status-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 16px 20px;
+  border-radius: 18px;
+  font-size: 24px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-status {
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
