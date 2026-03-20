@@ -1,31 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>FBED</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FBED</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1>FBED</h1>
-<p>From Beginning to the End of the Day</p>
+  <div class="container">
+    <h1>FBED</h1>
+    <p class="subtitle">From Beginning to the End of the Day</p>
 
-<h2>Morning Start</h2>
+    <h2>Morning Start</h2>
 
-<label><input type="checkbox"> ベッドから起きる</label><br>
-<label><input type="checkbox"> カーテンを開ける</label><br>
-<label><input type="checkbox"> 水を飲む</label><br>
+    <div class="check-list">
+      <label class="check-item">
+        <input type="checkbox">
+        <span>ベッドから起きる</span>
+      </label>
 
-<h2>Today Tasks</h2>
+      <label class="check-item">
+        <input type="checkbox">
+        <span>カーテンを開ける</span>
+      </label>
 
-<input id="taskInput" placeholder="タスクを書く">
-<button onclick="addTask()">追加</button>
+      <label class="check-item">
+        <input type="checkbox">
+        <span>水を飲む</span>
+      </label>
+    </div>
 
-<ul id="taskList"></ul>
+    <h2>Today Tasks</h2>
 
-<script src="app.js"></script>
+    <div class="task-row">
+      <input id="taskInput" type="text" placeholder="タスクを書く">
+      <button onclick="addTask()">追加</button>
+    </div>
 
+    <ul id="taskList"></ul>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
