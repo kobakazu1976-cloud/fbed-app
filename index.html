@@ -13,33 +13,41 @@
     <h1>FBED</h1>
     <p class="subtitle">From Beginning to the End of the Day</p>
 
-    <h2>Morning Start</h2>
-
+    <h2>朝のスタート</h2>
     <div class="check-list">
       <label class="check-item">
-        <input type="checkbox">
+        <input type="checkbox" class="morning-check">
         <span>ベッドから起きる</span>
       </label>
 
       <label class="check-item">
-        <input type="checkbox">
+        <input type="checkbox" class="morning-check">
         <span>カーテンを開ける</span>
       </label>
 
       <label class="check-item">
-        <input type="checkbox">
+        <input type="checkbox" class="morning-check">
         <span>水を飲む</span>
       </label>
     </div>
 
-    <h2>Today Tasks</h2>
+    <h2>今日やること</h2>
 
     <div class="task-row">
-      <input id="taskInput" type="text" placeholder="タスクを書く">
+      <input id="taskInput" type="text" placeholder="やることを書く">
       <button onclick="addTask()">追加</button>
     </div>
 
-    <ul id="taskList"></ul>
+    <div class="status-box">
+      <p>のこりタスク: <span id="remainingCount">0</span></p>
+      <p>できたタスク: <span id="doneCount">0</span></p>
+    </div>
+
+    <h3>いまやること</h3>
+    <ul id="taskList" class="task-list"></ul>
+
+    <h3>できた！</h3>
+    <ul id="doneList" class="done-list"></ul>
   </div>
 
   <script src="app.js"></script>
