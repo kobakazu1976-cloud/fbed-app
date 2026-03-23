@@ -18,10 +18,22 @@
     <p class="subtitle">朝から夜までのやること</p>
 
     <section class="now-card">
-      <div class="now-label">今やること</div>
+      <div class="now-header">
+        <div class="now-label">今やること</div>
+
+        <label class="voice-toggle-wrap">
+          <input type="checkbox" id="voiceToggle" checked>
+          <span>音声で読む</span>
+        </label>
+      </div>
+
       <div id="nowTask" class="now-task">まだありません</div>
       <div id="nowCategory" class="now-category"></div>
-      <button id="completeNowBtn" class="complete-now-btn" onclick="completeNowTask()">完了</button>
+
+      <div class="now-actions">
+        <button id="completeNowBtn" class="complete-now-btn" onclick="completeNowTask()">完了</button>
+        <button class="speak-btn" onclick="speakNowTask()">もう一度読む</button>
+      </div>
     </section>
 
     <h2>朝のスタート</h2>
@@ -62,6 +74,12 @@
       <button class="quick-btn" onclick="quickAdd('朝食')">朝食</button>
       <button class="quick-btn" onclick="quickAdd('歯磨き')">歯磨き</button>
       <button class="quick-btn" onclick="quickAdd('運動')">運動</button>
+    </div>
+
+    <h3>コメント</h3>
+    <div class="feedback-box">
+      <textarea id="feedbackInput" placeholder="やりにくかったこと、よかったことを書く"></textarea>
+      <button onclick="saveFeedback()">コメント保存</button>
     </div>
 
     <h3>いまやることリスト</h3>
