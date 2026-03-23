@@ -203,7 +203,7 @@ function fallbackTransformTask(task) {
 }
 
 // ------------------------------
-// フィードバック保存
+// コメント保存
 // ------------------------------
 function saveFeedback() {
   const input = document.getElementById("feedbackInput");
@@ -216,6 +216,49 @@ function saveFeedback() {
 
 function getLatestFeedback() {
   return localStorage.getItem(getFeedbackKey()) || "";
+}
+
+// ------------------------------
+// 音声読み上げ
+// ------------------------------
+function speakNowTask() {
+  const voiceToggle = document.getElementById("voiceToggle");
+  if (voiceToggle && !voiceToggle.checked) return;
+
+  const nowTaskEl = document.getElementById("nowTask");
+  if (!nowTaskEl) return;
+
+  const text = nowTaskEl.textContent.trim();
+
+  if (!text || text === "まだありません" || text === "今日はここまで！") {
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ja-JP";
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const jaVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("ja"));
+  if (jaVoice) {
+    utterance.voice = jaVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// iPhone/Safari対策で音声一覧を先に読み込む
+function warmUpVoices() {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.getVoices();
 }
 
 // ------------------------------
@@ -443,7 +486,6 @@ async function addTask() {
   } catch (error) {
     console.error("AI error:", error);
 
-    // AI失敗時は予備ルールで追加
     const fallback = fallbackTransformTask(text);
     fallback.steps.forEach((step) => {
       addTaskToCategory(fallback.category, step, false);
@@ -518,7 +560,6 @@ function updateNowTask() {
   const nowCategoryEl = document.getElementById("nowCategory");
   const completeBtn = document.getElementById("completeNowBtn");
 
-  // 朝のスタート優先
   const unfinishedMorning = Array.from(document.querySelectorAll(".morning-check"))
     .find((check) => !check.checked);
 
@@ -529,10 +570,10 @@ function updateNowTask() {
     completeBtn.disabled = false;
     completeBtn.dataset.type = "morning";
     completeBtn.dataset.text = text;
+    speakNowTask();
     return;
   }
 
-  // 通常タスクの先頭
   const firstTask = document.querySelector(".category-block .category-items li");
 
   if (firstTask) {
@@ -543,6 +584,7 @@ function updateNowTask() {
     completeBtn.disabled = false;
     completeBtn.dataset.type = "task";
     completeBtn.dataset.text = taskText;
+    speakNowTask();
     return;
   }
 
@@ -596,6 +638,8 @@ function completeNowTask() {
 // Enterキーで追加
 // ------------------------------
 document.addEventListener("DOMContentLoaded", function () {
+  warmUpVoices();
+
   const input = document.getElementById("taskInput");
   if (input) {
     input.addEventListener("keydown", function (event) {
@@ -603,6 +647,12 @@ document.addEventListener("DOMContentLoaded", function () {
         addTask();
       }
     });
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.onvoiceschanged = function () {
+      warmUpVoices();
+    };
   }
 });
 
