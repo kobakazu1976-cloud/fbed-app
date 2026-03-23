@@ -74,6 +74,13 @@ h1 {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
+.now-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .now-label {
   font-size: 22px;
   color: #7a3cff;
@@ -81,11 +88,23 @@ h1 {
   font-weight: bold;
 }
 
+.voice-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.8);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 16px;
+  color: #333;
+}
+
 .now-task {
   font-size: 38px;
   font-weight: 900;
   color: #222;
   line-height: 1.4;
+  margin-top: 10px;
 }
 
 .now-category {
@@ -95,8 +114,14 @@ h1 {
   font-weight: bold;
 }
 
-.complete-now-btn {
+.now-actions {
+  display: flex;
+  gap: 12px;
   margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.complete-now-btn {
   padding: 16px 22px;
   background: linear-gradient(135deg, #52c41a, #95de64);
   color: white;
@@ -116,6 +141,17 @@ h1 {
   background: #bfbfbf;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.speak-btn {
+  padding: 16px 22px;
+  background: linear-gradient(135deg, #7a3cff, #b37dff);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 h2 {
@@ -204,6 +240,24 @@ button:hover {
   padding: 10px 14px;
   border-radius: 999px;
   box-shadow: 0 5px 12px rgba(255, 127, 209, 0.28);
+}
+
+.feedback-box {
+  background: rgba(255,255,255,0.9);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.09);
+}
+
+#feedbackInput {
+  width: 100%;
+  min-height: 90px;
+  border-radius: 14px;
+  border: 2px solid #e4d7ff;
+  padding: 14px;
+  font-size: 18px;
+  box-sizing: border-box;
+  margin-bottom: 12px;
 }
 
 .task-list {
